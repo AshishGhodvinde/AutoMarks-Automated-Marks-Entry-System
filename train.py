@@ -1,7 +1,7 @@
-import torch
-import torch.nn as nn
-import torch.optim as optim
-from torchvision import datasets, transforms
+import torch # type: ignore
+import torch.nn as nn # type: ignore
+import torch.optim as optim # type: ignore
+from torchvision import datasets, transforms # type: ignore
 import os
 
 class MnistCNN(nn.Module):

@@ -1,8 +1,8 @@
-import cv2
-import numpy as np
-import torch
-from torchvision import transforms
-from PIL import Image
+import cv2 # type: ignore
+import numpy as np # type: ignore
+import torch # type: ignore
+from torchvision import transforms # type: ignore
+from PIL import Image # type: ignore
 
 class SimpleMarkDetector:
     def __init__(self, mnist_model, device):

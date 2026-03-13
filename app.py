@@ -1,8 +1,8 @@
-from flask import Flask, request, render_template, jsonify, send_file
+from flask import Flask, request, render_template, jsonify, send_file # type: ignore
 import os
-import werkzeug
+import werkzeug # type: ignore
 import uuid
-from processor import process_image, export_to_excel
+from processor import process_image, export_to_excel # type: ignore
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'uploads'

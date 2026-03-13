@@ -262,33 +262,29 @@
         }
         
         // Function to export edited marks to Excel
+        // Function to download the entire accumulated session database Excel file
         async function exportEditedMarks() {
             try {
-                const response = await fetch('/export_edited_marks', {
+                // First save any pending edits on the screen before downloading the full database
+                await fetch('/update_marks', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         roll_number: currentRollNumber,
                         results: currentResults,
+                        excel_file: currentExcelFile,
                         session_id: sessionId
                     })
                 });
-                
-                if (response.ok) {
-                    const blob = await response.blob();
-                    const url = window.URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = `marks_${currentRollNumber}_edited.xlsx`;
-                    document.body.appendChild(a);
-                    a.click();
-                    document.body.removeChild(a);
-                    window.URL.revokeObjectURL(url);
-                } else {
-                    alert('❌ Failed to export Excel file');
-                }
+
+                // Then trigger the download of the entire accumulated database for this session
+                const downloadUrl = `/download/${sessionId}/${currentExcelFile}`;
+                const a = document.createElement('a');
+                a.href = downloadUrl;
+                a.download = `marks_database_${sessionId}.xlsx`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
             } catch (err) {
                 alert('❌ Failed to export. Please try again.');
                 console.error(err);

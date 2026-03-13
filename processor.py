@@ -6,7 +6,7 @@ import os
 import torch # type: ignore
 from torchvision import transforms # type: ignore
 from PIL import Image # type: ignore
-from train import MnistCNN
+from train import MnistCNN # type: ignore
 import re
 from typing import Optional, Dict, Any, List
 
@@ -143,8 +143,8 @@ def process_image(img_path):
         if 'total' in alpha:
             total_y = float(e['y'])
 
-    obt_x: float = float(obt_e['x']) if obt_e is not None else float(img_width) * 0.75
-    max_x: float = float(max_e['x']) if max_e is not None else float(img_width) * 0.5
+    obt_x: float = float(obt_e['x']) if obt_e is not None else float(img_width) * 0.75 # type: ignore
+    max_x: float = float(max_e['x']) if max_e is not None else float(img_width) * 0.5 # type: ignore
 
     rows: List[Dict[str, Any]] = []
     
@@ -193,7 +193,7 @@ def process_image(img_path):
                 break
                 
         if valid_row:
-            question_name, q_max = expected_q[q_index]
+            question_name, q_max = expected_q[q_index] # type: ignore
 
     
             
@@ -211,7 +211,7 @@ def process_image(img_path):
             cv2.rectangle(img_debug, (c_x, c_y), (x_end, y_end), (0, 0, 255), 2)
             cv2.putText(img_debug, question_name, (c_x-60, c_y+20), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
             
-            crop_img = img[c_y:y_end, c_x:x_end]
+            crop_img = img[c_y:y_end, c_x:x_end] # type: ignore
             mark_pred = '-'
             
             if crop_img.size > 0:
@@ -275,7 +275,20 @@ def export_to_excel(roll_number, extracted_data, total, output_path):
         for col in df_existing.columns:
             if col not in df_new.columns:
                 df_new[col] = "-"
-        df_combined = pd.concat([df_existing, df_new], ignore_index=True)
+                
+        # If the roll number already exists, update that specific row instead of blindly appending
+        # We enforce type string for safer matching
+        if 'Roll Number' in df_existing.columns:
+            df_existing['Roll Number'] = df_existing['Roll Number'].astype(str)
+            existing_match = df_existing['Roll Number'] == str(roll_number)
+            if existing_match.any(): # type: ignore
+                for col in df_new.columns:
+                    df_existing.loc[existing_match, col] = df_new[col].iloc[0]
+                df_combined = df_existing
+            else:
+                df_combined = pd.concat([df_existing, df_new], ignore_index=True)
+        else:
+            df_combined = pd.concat([df_existing, df_new], ignore_index=True)
     else:
         df_combined = df_new
         
